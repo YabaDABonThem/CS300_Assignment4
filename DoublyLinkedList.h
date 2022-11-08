@@ -30,53 +30,97 @@ public:
     DoublyLinkedList operator=(const DoublyLinkedList<T> &); 
 
     //initializes an empty list
-    void init();               
+    void init();
 
     //returns true if the list is empty, false otherwise
-    bool isEmpty() ;                
+    bool isEmpty() {
+        return !first; // there has to be a first Node in order for the list to not be empty
+    }
     
     //returns the number of items in the list
-    int getLength();                
+    int getLength() {
+        return length;
+    }
     
     //inserts a new item to the beginning of the list
-    void insertFirst(const T &);    
+    void insertFirst(const T &data) {
+        Node *temp = new Node();
+        temp->data = data;
+        temp->next = first;
+        first->prev = temp;
+        first = temp;
+
+    }
     
     //inserts a new item at the end of the list
-    void insertLast(const T &);     
+    void insertLast(const T &data) {
+        Node *temp = new Node();
+        temp->data = data;
+        temp->prev = last;
+        last->next = temp;
+        last = temp;
+    }
     
     //deletes the first item from the list
-    void deleteFirst();             
+    void deleteFirst() {
+        Node *temp = first;
+        first = first->next;
+        // temp->next = nullptr; // you shouldn't need to reassign the pointers in temp
+        first->prev = nullptr;
+        delete temp;
+    }
     
     //deletes the last item in the list
-    void deleteLast();              
+    void deleteLast() {
+        Node *temp = last;
+        last = last->prev;
+        last->next = nullptr;
+        delete temp;
+    }     
     
     //destroys the list and makes it empty
     void clear();
 
     //iterator functions
     //sets the iterator to the beginning of the linked list
-    void setIteratorFirst();        
+    void setIteratorFirst() {
+        iterator = first;
+    }
     
     //sets the iterator to the beginning of the linked list
-    void setIteratorLast();         
+    void setIteratorLast() {
+        iterator = last;
+    }
     
     //checks if the iterator has next
-    bool hasNext();  
+    bool hasNext() {
+        return iterator->next;
+    }
 
     //checks if the iterator has prev
-    bool hasPrev();            
+    bool hasPrev() {
+        return iterator->prev;
+    }
     
     //sets the iterator to the next node
-    void next();
+    void next() {
+        iterator = iterator->next;
+    }
     
     //sets the iterator to the previous node
-    void prev();
+    void prev() {
+        iterator = iterator->prev;
+    }
     
     //returns true if the iterator is null
-    bool isIteratorNULL();
+    bool isIteratorNULL() {
+        return !iterator;
+    }
     
     //gets the data the iterator pointing at 
-    T getData();
+    T getData() {
+        return iterator->data;
+    }
 
     //friend functions
     //overloading operator<<
@@ -85,7 +129,7 @@ public:
 
     //overloading operator>>
     template <class U>
-    friend istream& operator>>(istream& in, DoublyLinkedList<U> &);    
+    friend istream& operator>>(istream& in, DoublyLinkedList<U> &);
 
 };
 
