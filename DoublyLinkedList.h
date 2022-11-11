@@ -11,26 +11,57 @@ template <class T>
 class DoublyLinkedList {
     
 protected:
-    Node<T> *first;      //a pointer to the first of the linked list
-    Node<T> *last;       //a pointer to the last node of the linked list
-    Node<T> *iterator;   //an internal iterator for the linked list object
-    int length;          //number of items in the linked list
+    Node<T> *first = nullptr;      //a pointer to the first of the linked list
+    Node<T> *last = nullptr;       //a pointer to the last node of the linked list
+    Node<T> *iterator = nullptr;   //an internal iterator for the linked list object
+    int length = 0;          //number of items in the linked list
                                                                     
 public:
     //default no-argument constructor
-    DoublyLinkedList();  
+    DoublyLinkedList() = default;
 
     //destructor  
-    ~DoublyLinkedList();    
+    ~DoublyLinkedList() {
+        clear();
+    }
     
     //copy constructor
-    DoublyLinkedList(const DoublyLinkedList<T> &);   
+    DoublyLinkedList(const DoublyLinkedList<T> &other) {
+        *this = other;
+    }
 
     //copy assignment operator
-    DoublyLinkedList operator=(const DoublyLinkedList<T> &); 
+    DoublyLinkedList operator=(const DoublyLinkedList<T> &other) {
+        if (this == other) { // we don't need to do anything if they're the same thing
+            return *this;
+        }
+        
+        clear();
+
+        if (!other.first) { // don't need to copy any elements over if it's empty
+            return *this;
+        }
+        
+        // create the first node
+        Node *otherNode = other.first;
+        first = new Node();
+        first->data = otherNode->data;
+        last = first;
+        otherNode = otherNode->next;
+
+        // add in all the other Nodes
+        while(otherNode) {
+            last->next = new Node();
+            last->next->data = otherNode->data;
+            last->next->prev = last; // make the links work the other way. 
+            last = last->next;
+            otherNode = otherNode->next;
+        }
+        return *this;
+    }
 
     //initializes an empty list
-    void init();
+    // void init(); // why would we need this when we can just new an item?
 
     //returns true if the list is empty, false otherwise
     bool isEmpty() {
@@ -79,7 +110,20 @@ public:
     }     
     
     //destroys the list and makes it empty
-    void clear();
+    void clear() {
+        // iterate through all items and delete them
+        if (isEmpty()) return;
+
+        iterator = first;
+        Node *temp = iterator->next;
+        while (temp) {
+            delete iterator;
+            iterator = temp;
+            temp = temp->next;
+        }
+        delete iterator; // without this the last item wouldn't get deleted
+
+    }
 
     //iterator functions
     //sets the iterator to the beginning of the linked list
@@ -125,11 +169,16 @@ public:
     //friend functions
     //overloading operator<<
     template <class U>
-    friend ostream& operator<<(ostream& out, const DoublyLinkedList<U> &);
+    friend ostream& operator<<(ostream& out, const DoublyLinkedList<U> &outputList) {
+        
+    }
 
     //overloading operator>>
+    // create doubly linked list based of text file
     template <class U>
-    friend istream& operator>>(istream& in, DoublyLinkedList<U> &);
+    friend istream& operator>>(istream& in, DoublyLinkedList<U> &inputList) {
+        
+    }
 
 };
 
