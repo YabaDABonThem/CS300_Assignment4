@@ -28,7 +28,7 @@ void dllTest()
 	grade(list.isEmpty() == true, 1);
 	for (int i = 0; i < 10; i++)
 		list.insertFirst(i);
-
+	
 	cout << "03. check the length of the list" << endl;
 	grade(list.getLength() == 10, 2);
 

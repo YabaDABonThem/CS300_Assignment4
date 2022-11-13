@@ -128,16 +128,10 @@ public:
     void clear() {
         // iterate through all items and delete them
         if (isEmpty()) return;
-        length = 0;
-        iterator = first;
-        Node<T> *temp = iterator->next;
-        while (iterator->next) {
-            delete iterator;
-            iterator = temp;
-            temp = temp->next;
+        for (int i = 0; i < length; ++i) {
+            deleteFirst();
         }
-        delete iterator; // without this the last item wouldn't get deleted
-
+        length = 0;
     }
 
     //iterator functions
