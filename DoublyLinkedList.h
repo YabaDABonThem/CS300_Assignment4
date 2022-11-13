@@ -107,12 +107,16 @@ public:
     void deleteFirst() {
         if (isEmpty()) return;
         --length;
+        // note: there is no double link when there's only one item in the list. 
+        if (length == 0) {
+            delete first;
+            first = nullptr;
+            last = nullptr;
+            return;
+        }
         Node<T> *temp = first;
         first = first->next;
-        // note: there is no double link when there's only one item in the list. 
-        if (first != null) {
-            first->prev = nullptr;
-        } 
+        first->prev = nullptr; 
         delete temp;
     }
     
@@ -120,12 +124,16 @@ public:
     void deleteLast() {
         if (isEmpty()) return;
         --length;
+        // edge case: no double link when there's only one item. 
+        if (length == 0) {
+            delete last;
+            first = nullptr;
+            last = nullptr;
+            return;
+        }
         Node<T> *temp = last;
         last = last->prev;
-        // edge case: no double link when there's only one item. 
-        if (last != null) {
-            last->next = nullptr;            
-        }
+        last->next = nullptr;
         delete temp;
     }     
     
