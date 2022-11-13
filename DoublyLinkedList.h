@@ -109,8 +109,10 @@ public:
         --length;
         Node<T> *temp = first;
         first = first->next;
-        // temp->next = nullptr; // you shouldn't need to reassign the pointers in temp
-        first->prev = nullptr;
+        // note: there is no double link when there's only one item in the list. 
+        if (first != null) {
+            first->prev = nullptr;
+        } 
         delete temp;
     }
     
@@ -120,18 +122,19 @@ public:
         --length;
         Node<T> *temp = last;
         last = last->prev;
-        last->next = nullptr;
+        // edge case: no double link when there's only one item. 
+        if (last != null) {
+            last->next = nullptr;            
+        }
         delete temp;
     }     
     
     //destroys the list and makes it empty
     void clear() {
         // iterate through all items and delete them
-        if (isEmpty()) return;
-        for (int i = 0; i < length; ++i) {
+        while (!isEmpty()) {
             deleteFirst();
         }
-        length = 0;
     }
 
     //iterator functions
@@ -185,6 +188,7 @@ public:
         }
         // iterate through the linkedlist and print out all the items
         Node<T> *temp = outputList.first;
+        // Note: there is no double link when there's only one item in the list. 
         out << "NULL<-";
         while (temp.next) {
             out << temp->data << "<->";
