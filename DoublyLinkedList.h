@@ -43,15 +43,15 @@ public:
         }
         
         // create the first node
-        Node *otherNode = other.first;
-        first = new Node();
+        Node<T> *otherNode = other.first;
+        first = new Node<T>();
         first->data = otherNode->data;
         last = first;
         otherNode = otherNode->next;
 
         // add in all the other Nodes
         while(otherNode) {
-            last->next = new Node();
+            last->next = new Node<T>();
             last->next->data = otherNode->data;
             last->next->prev = last; // make the links work the other way. 
             last = last->next;
@@ -75,17 +75,28 @@ public:
     
     //inserts a new item to the beginning of the list
     void insertFirst(const T &data) {
-        Node *temp = new Node();
+        ++length;
+        if (isEmpty()) {
+            first = new Node<T>();
+            first->data = data;
+            last = first;
+        }
+        Node<T> *temp = new Node<T>();
         temp->data = data;
         temp->next = first;
         first->prev = temp;
         first = temp;
-
     }
     
     //inserts a new item at the end of the list
     void insertLast(const T &data) {
-        Node *temp = new Node();
+        ++length;
+        if (isEmpty()) {
+            first = new Node<T>();
+            first->data = data;
+            last = first;
+        }        
+        Node<T> *temp = new Node<T>();
         temp->data = data;
         temp->prev = last;
         last->next = temp;
@@ -94,7 +105,9 @@ public:
     
     //deletes the first item from the list
     void deleteFirst() {
-        Node *temp = first;
+        if (isEmpty()) return;
+        --length;
+        Node<T> *temp = first;
         first = first->next;
         // temp->next = nullptr; // you shouldn't need to reassign the pointers in temp
         first->prev = nullptr;
@@ -103,7 +116,9 @@ public:
     
     //deletes the last item in the list
     void deleteLast() {
-        Node *temp = last;
+        if (isEmpty()) return;
+        --length;
+        Node<T> *temp = last;
         last = last->prev;
         last->next = nullptr;
         delete temp;
@@ -113,10 +128,10 @@ public:
     void clear() {
         // iterate through all items and delete them
         if (isEmpty()) return;
-
+        length = 0;
         iterator = first;
-        Node *temp = iterator->next;
-        while (temp) {
+        Node<T> *temp = iterator->next;
+        while (iterator->next) {
             delete iterator;
             iterator = temp;
             temp = temp->next;
@@ -168,16 +183,36 @@ public:
 
     //friend functions
     //overloading operator<<
+    // print a string representation out to the terminal. 
     template <class U>
     friend ostream& operator<<(ostream& out, const DoublyLinkedList<U> &outputList) {
-        
+        if (outputList.isEmpty()) {
+            return out; // don't need to print anything if it's empty
+        }
+        // iterate through the linkedlist and print out all the items
+        Node<T> *temp = outputList.first;
+        out << "NULL<-";
+        while (temp.next) {
+            out << temp->data << "<->";
+            temp = temp->next;
+        }
+        out << temp << "->NULL";
+
+
+
+        return out;
     }
 
     //overloading operator>>
     // create doubly linked list based of text file
     template <class U>
     friend istream& operator>>(istream& in, DoublyLinkedList<U> &inputList) {
-        
+        char c;
+        while (in) {
+            cin >> c;
+            inputList.insertLast(static_cast<U>(c-'0'));
+        }
+        return in;
     }
 
 };
