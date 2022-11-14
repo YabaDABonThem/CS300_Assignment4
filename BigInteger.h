@@ -14,16 +14,15 @@ public:
         if (charAt(0) == '-') {
             this.isPositive = false;
         }
+        // should we support trimming zeroes?
     }
 
     ~BigInteger() {
 
     }
 
-
-
-    // how should adding negative numbers work? should you do it here, or in the substraction operator?
     typedef Node<int> IntNode;
+
     BigInteger BigInteger::operator+ (const BigInteger& rightNum) const {
         // If the signs are different, the answer becomes a rearranged subtraction problem
         if (this->isPositive != rightNum.isPositive) {
@@ -66,37 +65,49 @@ public:
 
     // How to implement subtraction? (How do negative numbers work?)
     // the tests expect you to support negative numbers
-    typedef Node<int> IntNode;
     BigInteger BigInteger::operator- (const BigInteger& rightNum) const {
         // if the signs are different, it basically becomes a rearranged addition equation
         if (this->isPositive != rightNum.isPositive) {
             // determine which number is positive
             if (!this->isPositive) {
-                isPositive = !isPositive;
+                this->isPositive = !this->isPositive;
             }
-            return this + rightNum; // if second is positive, return the negative of left + right
+            return *this + rightNum; // if second is positive, return the negative of left + right
         }
 
         // You must first decide which number is larger and determine which number subtracted by the other based off that
-        IntNode *leftNumIter = this->last; 
+        BigInteger leftNumCopy = *this; // We need to make a copy of the left number because 
+        IntNode *leftNumIter = leftNumCopy.last; 
         IntNode *rightNumIter = rightNum.last;
         BigInteger difference;
-        int borrowedDigit = 0; // represents whether or not there was a borrowed 1 from the previous digit (being 10)
+        bool carry = false; // represents whether or not you should carry a number from previous digit
         int columnDiff = 0; 
-        while (leftNumIter || rightNumIter) {
-            // first scenario: being to subtract normally
-            if (leftNumIter->data >= rightNumIter->data) {
-                columnDiff = leftNumIter->data + borrowedDigit - rightNumIter->data;
-                borrowedDigit = 0;
-                // Note: there is no need to check if you need to change the borrowed digit or not
-                difference.insertFirst(columnDiff);
+        while (leftNumIter) { // length of left num is always greater than or equal to the length of the right num
+            if (carry) { // this means if the LAST number carried
+                leftNumIter->data--;
+                carry = false;
             }
-
-            // second scenario: need to borrow a digit from the next avilable number
+            if (leftNumIter->data - rightNumIter->data < 0) { // check if you need to carry over a number from the left
+                carry = true;
+                leftNumIter->data += 10;
+            }
+            difference.insertFirst(leftNumIter->data - rightNumIter->data);
+            leftNumIter = leftNumIter->prev;
+            rightNumIter = rightNumIter->prev;
         }
+        
+        // We need to trim the zeroes at the beginning or else the length of the result will be inaccurate
+        IntNode *zeroPtr = difference.first;
+        IntNode *prevZero = nullptr;
+        while (zeroPtr->data == 0) {
+            prevZero = zeroPtr;
+            zeroPtr = zeroPtr->next;
+            delete prevZero;
+        } 
         return difference;
     }
 
+    // unary operator, just negates the sign
     BigInteger BigInteger::operator- () const {}
         BigInteger negation = *this;
         negation.isPositive = !this->isPositive;
