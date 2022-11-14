@@ -12,7 +12,7 @@ protected:
 public:
     BigInteger(String num) {
         if (charAt(0) == '-') {
-            isPositive = false;
+            this.isPositive = false;
         }
     }
 
@@ -20,9 +20,26 @@ public:
 
     }
 
+
+
     // how should adding negative numbers work? should you do it here, or in the substraction operator?
     typedef Node<int> IntNode;
     BigInteger BigInteger::operator+ (const BigInteger& rightNum) const {
+        // If the signs are different, the answer becomes a rearranged subtraction problem
+        if (this->isPositive != rightNum.isPositive) {
+            // determine which number is positive
+            if (this->isPositive) {
+                return *this - (-rightNum);
+            } else {
+                return rightNum - (-*this);
+            }
+
+        } else if (!this->isPositive) {
+            // you're going to return -(a+b)
+            // how do you do add a negative of a number without changing the number's value?
+            return -((-*this) + (-rightNum));
+        }
+        // Now we can gurantee that all numbers are positive
         IntNode *leftNumIter = this->last; 
         IntNode *rightNumIter = rightNum.last;
         BigInteger sum;
@@ -51,6 +68,15 @@ public:
     // the tests expect you to support negative numbers
     typedef Node<int> IntNode;
     BigInteger BigInteger::operator- (const BigInteger& rightNum) const {
+        // if the signs are different, it basically becomes a rearranged addition equation
+        if (this->isPositive != rightNum.isPositive) {
+            // determine which number is positive
+            if (!this->isPositive) {
+                isPositive = !isPositive;
+            }
+            return this + rightNum; // if second is positive, return the negative of left + right
+        }
+
         // You must first decide which number is larger and determine which number subtracted by the other based off that
         IntNode *leftNumIter = this->last; 
         IntNode *rightNumIter = rightNum.last;
@@ -69,6 +95,12 @@ public:
             // second scenario: need to borrow a digit from the next avilable number
         }
         return difference;
+    }
+
+    BigInteger BigInteger::operator- () const {}
+        BigInteger negation = *this;
+        negation.isPositive = !this->isPositive;
+        return negation;
     }
 
     bool BigInteger::operator> (const BigInteger& rightNum) const {
@@ -102,4 +134,8 @@ public:
         }
     } 
     
+    bool BigInteger::operator< (const BigInteger& rightNum) const {
+        
+    }
+
 };
