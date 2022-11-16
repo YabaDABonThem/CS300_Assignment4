@@ -2,7 +2,7 @@
 #include <iostream>
 #include "DoublyLinkedList.h"
 #include "Node.h"
-
+using namespace std;
 
 class BigInteger : public DoublyLinkedList<int> {
     
@@ -16,7 +16,7 @@ public:
     BigInteger() = default;
 
     // create a BigInteger baseed off the number passed in
-    BigInteger(std::string numString) {
+    BigInteger(string numString) {
         if (numString.at(0) == '-') {
             isPositive = false;
         }
@@ -194,14 +194,14 @@ public:
     }
 
     // friend functions
-    friend ostream& operator<<(ostream& out, const BigInteger &outputNum) {
-        // we don't need to check if the output number is empty bc the parent will
-        // all we have to do is print out the negative if there is one.
-        if (!outputNum.isPositive) {
-            out << '-';
-        }
-        return DoublyLinkedList::operator<<(out, outputNum);
-    }
+    // friend ostream& operator<<(ostream& out, const BigInteger &outputNum) {
+    //     // we don't need to check if the output number is empty bc the parent will
+    //     // all we have to do is print out the negative if there is one.
+    //     if (!outputNum.isPositive) {
+    //         out << '-';
+    //     }
+    //     return DoublyLinkedList<int>::<<(out, outputNum);
+    // }
 
     friend istream& operator>>(istream& in, BigInteger &inputNum) {
         // convert inputstream to a string and let the construcrtor take care of it
@@ -210,7 +210,7 @@ public:
         if (c == '-') {
             inputNum.isPositive = false;
         }
-        return DoublyLinkedList::operator>>(in, inputNum);
+        return in >> (DoublyLinkedList<int>&)inputNum;
         
     }
 };

@@ -2,6 +2,7 @@
 #include "BigInteger.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -18,6 +19,25 @@ void grade(bool condition, int points)
 	{
 		cout << "Fail" << endl;
 	}
+}
+
+void operatorTest() {
+	// DoublyLinkedList<int> list;
+	// cout << "Operator testing" << endl;
+	// for (int i = 0; i < 10; i++)
+	// 	list.insertFirst(i);
+	// cout << list << endl;
+
+	DoublyLinkedList<int> list2;
+	std::istringstream input;
+    // input.str("111\n222\n3\n4\n5\n6\n7\n");
+	ifstream file;
+	cout << "read two big integers from text file" << endl;
+	file.open("C:\\Users\\allen\\Documents\\cs300\\HW4\\test.txt");
+	file >> list2;
+	cout << "list 2: " << list2 << endl;
+	file >> list2;
+	cout << "list 2: " << list2 << endl;
 }
 
 void dllTest()
@@ -153,9 +173,9 @@ void dllTest()
 
 int main()
 {
-	dllTest();          //test cases for doubly linked list implementation
+	//dllTest();          //test cases for doubly linked list implementation
 	//bigIntegerTest();   //test cases for big integer implementation
-	cout << "Test Score:" << score << endl;
-
+	//cout << "Test Score:" << score << endl;
+	operatorTest();
 	return 0;
 }

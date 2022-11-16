@@ -80,6 +80,7 @@ public:
             first = new Node<T>();
             first->data = data;
             last = first;
+            return;
         }
         Node<T> *temp = new Node<T>();
         temp->data = data;
@@ -95,6 +96,7 @@ public:
             first = new Node<T>();
             first->data = data;
             last = first;
+            return;
         }        
         Node<T> *temp = new Node<T>();
         temp->data = data;
@@ -191,18 +193,18 @@ public:
     // print a string representation out to the terminal. 
     template <class U>
     friend ostream& operator<<(ostream& out, const DoublyLinkedList<U> &outputList) {
-        if (outputList.isEmpty()) {
+        if (!outputList.first) {
             return out; // don't need to print anything if it's empty
         }
         // iterate through the linkedlist and print out all the items
-        Node<T> *temp = outputList.first;
+        Node<U> *temp = outputList.first;
         // Note: there is no double link when there's only one item in the list. 
         out << "NULL<-";
-        while (temp.next) {
-            out << temp->data << "<->";
+        while (temp) {
+            out << temp->data << (temp->next ? "<->" : "");
             temp = temp->next;
         }
-        out << temp << "->NULL";
+        out << "->NULL";
 
 
 
@@ -213,10 +215,13 @@ public:
     // create doubly linked list based off text file
     template <class U>
     friend istream& operator>>(istream& in, DoublyLinkedList<U> &inputList) {
+        inputList.clear();
         char c;
-        while (in) {
-            cin >> c;
-            inputList.insertLast(static_cast<U>(c-'0'));
+        string line;
+        std::getline(in, line); 
+        
+        for (int i = 0; i < line.length(); ++i) {
+            inputList.insertLast(static_cast<U>(line[i]-'0'));
         }
         return in;
     }
