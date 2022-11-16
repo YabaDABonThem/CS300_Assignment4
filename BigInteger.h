@@ -10,20 +10,36 @@ protected:
     bool isPositive = true;
 
 public:
-    BigInteger(String num) {
-        if (charAt(0) == '-') {
-            this.isPositive = false;
-        }
-        // should we support trimming zeroes?
-    }
-
-    ~BigInteger() {
-
-    }
-
     typedef Node<int> IntNode;
 
-    BigInteger BigInteger::operator+ (const BigInteger& rightNum) const {
+    // default constructor: creates an empty BigInteger. 
+    BigInteger() = default;
+
+    // create a BigInteger baseed off the number passed in
+    BigInteger(std::string numString) {
+        if (numString.at(0) == '-') {
+            isPositive = false;
+        }
+        // this supports trimming zeroes in front
+        for (int i = 0; i < numString.length(); ++i) {
+            if (numString.at(i) != '0' && numString.at(i) != '-') {
+                insertLast(static_cast<int>(i-'0'));
+            }
+        }
+        
+    }
+
+    ~BigInteger() { // doesn't the destructor from the parent method work?
+
+    }
+
+    BigInteger operator= (const BigInteger& rightNum) {
+        this->isPositive = rightNum.isPositive;
+        DoublyLinkedList::operator=(rightNum);
+        return *this; // we need to convert from doublylinkedlist to biginteger
+    }
+
+    BigInteger operator+ (const BigInteger& rightNum) const {
         // If the signs are different, the answer becomes a rearranged subtraction problem
         if (this->isPositive != rightNum.isPositive) {
             // determine which number is positive
@@ -65,12 +81,13 @@ public:
 
     // How to implement subtraction? (How do negative numbers work?)
     // the tests expect you to support negative numbers
-    BigInteger BigInteger::operator- (const BigInteger& rightNum) const {
+    BigInteger operator- (const BigInteger& rightNum) const {
         // if the signs are different, it basically becomes a rearranged addition equation
+        BigInteger difference;
         if (this->isPositive != rightNum.isPositive) {
             // determine which number is positive
             if (!this->isPositive) {
-                this->isPositive = !this->isPositive;
+                difference.isPositive = difference.isPositive; // this method is supposed to be const! make a copy
             }
             return *this + rightNum; // if second is positive, return the negative of left + right
         }
@@ -79,7 +96,6 @@ public:
         BigInteger leftNumCopy = *this; // We need to make a copy of the left number because 
         IntNode *leftNumIter = leftNumCopy.last; 
         IntNode *rightNumIter = rightNum.last;
-        BigInteger difference;
         bool carry = false; // represents whether or not you should carry a number from previous digit
         int columnDiff = 0; 
         while (leftNumIter) { // length of left num is always greater than or equal to the length of the right num
@@ -108,20 +124,17 @@ public:
     }
 
     // unary operator, just negates the sign
-    BigInteger BigInteger::operator- () const {}
+    BigInteger operator- () const {
         BigInteger negation = *this;
         negation.isPositive = !this->isPositive;
         return negation;
     }
 
-    bool BigInteger::operator> (const BigInteger& rightNum) const {
+    bool operator> (const BigInteger& rightNum) const {
         // is there a difference between a positive and a negative zero?
         // scenario: they have different signs
         if (this->isPositive != rightNum.isPositive) {
-            if (this->isPositive) {
-                return true; 
-            }
-            return false;
+            return this->isPositive;
         }
         // scenario: they have he same signs
         bool isLeftAbsBigger = this->isPositive; // we compare the absolute value, if they have the same sign then
@@ -145,8 +158,59 @@ public:
         }
     } 
     
-    bool BigInteger::operator< (const BigInteger& rightNum) const {
-        
+    bool operator== (const BigInteger& rightNum) const {
+        if (this->isPositive != rightNum.isPositive) {
+            return false; // if the signs aren't equal, then they aren't equal
+        }
+
+        // signs are the same, so now you have to check if the absolute values are the same
+        // first we check the lengths
+        if (this->length != rightNum.length) {
+            return false;
+        }
+        // lengths are the same, now we check the values
+        IntNode *leftNumIter = this->first; 
+        IntNode *rightNumIter = rightNum.first;
+        while (leftNumIter) {
+            if (leftNumIter->data != rightNumIter->data) {
+                return false;
+            }
+            leftNumIter = leftNumIter->next;
+            rightNumIter = rightNumIter->next;
+        }
+        return true;
     }
 
+    bool operator>= (const BigInteger& rightNum) const {
+        return (*this == rightNum) || (*this > rightNum);
+    }
+
+    bool operator< (const BigInteger& rightNum) const {
+        return !(*this >= rightNum);
+    }
+
+    bool operator<= (const BigInteger& rightNum) const {
+        return (*this < rightNum) || (*this == rightNum);
+    }
+
+    // friend functions
+    friend ostream& operator<<(ostream& out, const BigInteger &outputNum) {
+        // we don't need to check if the output number is empty bc the parent will
+        // all we have to do is print out the negative if there is one.
+        if (!outputNum.isPositive) {
+            out << '-';
+        }
+        return DoublyLinkedList::operator<<(out, outputNum);
+    }
+
+    friend istream& operator>>(istream& in, BigInteger &inputNum) {
+        // convert inputstream to a string and let the construcrtor take care of it
+        char c;
+        cin.peek() >> c;
+        if (c == '-') {
+            inputNum.isPositive = false;
+        }
+        return DoublyLinkedList::operator>>(in, inputNum);
+        
+    }
 };

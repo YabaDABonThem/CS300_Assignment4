@@ -30,9 +30,9 @@ public:
         *this = other;
     }
 
-    //copy assignment operator
+    //assignment operator
     DoublyLinkedList operator=(const DoublyLinkedList<T> &other) {
-        if (this == other) { // we don't need to do anything if they're the same thing
+        if (this == &other) { // we don't need to do anything if they're the same thing
             return *this;
         }
         
@@ -210,7 +210,7 @@ public:
     }
 
     //overloading operator>>
-    // create doubly linked list based of text file
+    // create doubly linked list based off text file
     template <class U>
     friend istream& operator>>(istream& in, DoublyLinkedList<U> &inputList) {
         char c;
