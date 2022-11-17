@@ -22,22 +22,30 @@ void grade(bool condition, int points)
 }
 
 void operatorTest() {
-	// DoublyLinkedList<int> list;
-	// cout << "Operator testing" << endl;
-	// for (int i = 0; i < 10; i++)
-	// 	list.insertFirst(i);
-	// cout << list << endl;
-
-	DoublyLinkedList<int> list2;
-	std::istringstream input;
-    // input.str("111\n222\n3\n4\n5\n6\n7\n");
+	// BigInteger num1("123");
+	// cout << num1;
+	// cout << "28. create two big integers 19 and 300" << endl;
+	// BigInteger int1("19"), int2("300");
+	// cout << "29. subtract 19 by 300" << endl;
+	// cout << "int1: " << int1 << "   int2: " << int2 << endl;
+	// BigInteger actual2 = int1 - int2;
+	// BigInteger expected2("-281");
+	// cout << "30. check if 19 - 300 = -281" << endl;
+	// cout << "RESULT: " << actual2 << endl;
+	// grade(actual2 == expected2, 3);
+	// cout << "31. check if the result -281 is negative" << endl;
+	// grade(actual2.isNegative() == true, 2);
+	constexpr char path[] = "C:\\Users\\allen\\Documents\\cs300\\HW4\\test.txt";
+	BigInteger bigInt2, bigInt3;
 	ifstream file;
-	cout << "read two big integers from text file" << endl;
-	file.open("C:\\Users\\allen\\Documents\\cs300\\HW4\\test.txt");
-	file >> list2;
-	cout << "list 2: " << list2 << endl;
-	file >> list2;
-	cout << "list 2: " << list2 << endl;
+	cout << "34. read two big integers from text file" << endl;
+	file.open(path);
+	file >> bigInt2 >> bigInt3;
+	cout << "35. check the length of the first one" << endl;
+	cout << bigInt2 << endl;
+	cout << "LENGTH: " << bigInt2.getLength() << endl;
+	cout << "36. check the length of the second one" << endl;
+	cout << "LENGTH: " << bigInt3.getLength() << endl;
 }
 
 void dllTest()
@@ -113,69 +121,70 @@ void dllTest()
 
 }
 
-// void bigIntegerTest()
-// {
-// 	cout << "28. create two big integers 19 and 300" << endl;
-// 	BigInteger int1("19"), int2("300");
-// 	cout << "29. subtract 19 by 300" << endl;
-// 	BigInteger actual2 = int1 - int2;
-// 	BigInteger expected2("-281");
-// 	cout << "30. check if 19 - 300 = -281" << endl;
-// 	grade(actual2 == expected2, 3);
-// 	cout << "31. check if the result -281 is negative" << endl;
-// 	grade(actual2.isNegative() == true, 2);
+void bigIntegerTest()
+{
+	cout << "28. create two big integers 19 and 300" << endl;
+	BigInteger int1("19"), int2("300");
+	cout << "29. subtract 19 by 300" << endl;
+	BigInteger actual2 = int1 - int2;
+	BigInteger expected2("-281");
+	cout << "30. check if 19 - 300 = -281" << endl;
+	cout << "RESULT: " << actual2 << endl;
+	grade(actual2 == expected2, 3);
+	cout << "31. check if the result -281 is negative" << endl;
+	grade(actual2.isNegative() == true, 2);
 
-// 	cout << "32. create a big integer 55555556666666687888999" << endl;
-// 	BigInteger bigInt1("55555556666666687888999");
-// 	cout << "33. check the length of the big integer" << endl;
-// 	grade(bigInt1.getLength() == 23, 2);
+	cout << "32. create a big integer 55555556666666687888999" << endl;
+	BigInteger bigInt1("55555556666666687888999");
+	cout << "33. check the length of the big integer" << endl;
+	grade(bigInt1.getLength() == 23, 2);
 
-// 	BigInteger bigInt2, bigInt3;
-// 	ifstream file;
-// 	cout << "34. read two big integers from text file" << endl;
-// 	file.open("test.txt");
-// 	file >> bigInt2 >> bigInt3;
-// 	cout << "35. check the length of the first one" << endl;
-// 	grade(bigInt2.getLength() == 23, 2);
-// 	cout << "36. check the length of the second one" << endl;
-// 	grade(bigInt3.getLength() == 24, 2);
+	BigInteger bigInt2, bigInt3;
+	ifstream file;
+	cout << "34. read two big integers from text file" << endl;
+	file.open("C:\\Users\\allen\\Documents\\cs300\\HW4\\test.txt");
+	file >> bigInt2 >> bigInt3;
+	cout << "35. check the length of the first one" << endl;
+	grade(bigInt2.getLength() == 23, 2);
+	cout << "36. check the length of the second one" << endl;
+	grade(bigInt3.getLength() == 24, 2);
 
-// 	cout << "37. add them together" << endl;
-// 	BigInteger actual1 = bigInt2 + bigInt3;
-// 	BigInteger expected1("234657681223242153555775");
-// 	cout << "38. check if the result is 234657681223242153555775" << endl;
-// 	grade(actual1 == expected1, 2);
+	cout << "37. add them together" << endl;
+	BigInteger actual1 = bigInt2 + bigInt3;
+	BigInteger expected1("234657681223242153555775");
+	cout << "38. check if the result is 234657681223242153555775" << endl;
+	grade(actual1 == expected1, 2);
 
-// 	cout << "39. subtract two big integers that have same value" << endl;
-// 	BigInteger actual3 = bigInt2 - bigInt2;
-// 	BigInteger expected3("0");
-// 	cout << "40. check if the result is 0" << endl;
-// 	grade(actual3 == expected3, 2);
+	cout << "39. subtract two big integers that have same value" << endl;
+	BigInteger actual3 = bigInt2 - bigInt2;
+	BigInteger expected3("0");
+	cout << "40. check if the result is 0" << endl;
+	grade(actual3 == expected3, 2);
 
-// 	cout << "41. subtract 55555556666666687888999 by 179102124556575465666776" << endl;
-// 	BigInteger actual4 = bigInt2 - bigInt3;
-// 	BigInteger expected4("-123546567889908777777777");
-// 	cout << "42. check if the result is -123546567889908777777777" << endl;
-// 	grade(actual4 == expected4, 2);
+	cout << "41. subtract 55555556666666687888999 by 179102124556575465666776" << endl;
+	BigInteger actual4 = bigInt2 - bigInt3;
+	BigInteger expected4("-123546567889908777777777");
+	cout << "42. check if the result is -123546567889908777777777" << endl;
+	grade(actual4 == expected4, 2);
 
-// 	cout << "43. check if 55555556666666687888999 < 179102124556575465666776" << endl;
-// 	grade(bigInt2 < bigInt3 == true, 1);
+	cout << "43. check if 55555556666666687888999 < 179102124556575465666776" << endl;
+	grade(bigInt2 < bigInt3 == true, 1);
 
-// 	cout << "44. check if 55555556666666687888999 >= 179102124556575465666776" << endl;
-// 	grade(bigInt3 >= bigInt2 == true, 1);
+	cout << "44. check if 55555556666666687888999 >= 179102124556575465666776" << endl;
+	grade(bigInt3 >= bigInt2 == true, 1);
 
-// 	cout << "45. create two big integers 12345678997654321 and 12345678997654321" << endl;
-// 	BigInteger bigInt4("12345678997654321"), bigInt5("12345678997654321");
-// 	cout << "46. check if 12345678997654321 <= 12345678997654321" << endl;
-// 	grade((bigInt4 <= bigInt5 == true), 1);
+	cout << "45. create two big integers 12345678997654321 and 12345678997654321" << endl;
+	BigInteger bigInt4("12345678997654321"), bigInt5("12345678997654321");
+	cout << "46. check if 12345678997654321 <= 12345678997654321" << endl;
+	grade((bigInt4 <= bigInt5 == true), 1);
 
-// }
+}
 
 int main()
 {
-	//dllTest();          //test cases for doubly linked list implementation
-	//bigIntegerTest();   //test cases for big integer implementation
-	//cout << "Test Score:" << score << endl;
-	operatorTest();
+	dllTest();          //test cases for doubly linked list implementation
+	bigIntegerTest();   //test cases for big integer implementation
+	cout << "Test Score:" << score << endl;
+	//operatorTest();
 	return 0;
 }

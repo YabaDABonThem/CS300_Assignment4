@@ -1,3 +1,5 @@
+#ifndef BIGINTEGER_H
+#define BIGINTEGER_H
 #include <string>
 #include <iostream>
 #include "DoublyLinkedList.h"
@@ -16,26 +18,39 @@ public:
     BigInteger() = default;
 
     // create a BigInteger baseed off the number passed in
-    BigInteger(string numString) {
-        if (numString.at(0) == '-') {
+    BigInteger(const string& numString) {
+        std::string::const_iterator it = numString.begin();
+        if (*it == '-') {
             isPositive = false;
+            ++it;
         }
         // this supports trimming zeroes in front
-        for (int i = 0; i < numString.length(); ++i) {
-            if (numString.at(i) != '0' && numString.at(i) != '-') {
-                insertLast(static_cast<int>(i-'0'));
-            }
+        while (*it) {
+            insertLast(static_cast<int>(*it-'0'));
+            ++it;
         }
-        
+
+        trimLeadingZeroes();
     }
 
     ~BigInteger() { // doesn't the destructor from the parent method work?
 
     }
 
-    BigInteger operator= (const BigInteger& rightNum) {
+    void clear() override {
+        isPositive = true;
+        DoublyLinkedList<int>::clear();
+    }
+
+    // we have to include this method for some reason
+    bool isNegative() {
+        return !isPositive;
+    }
+
+    BigInteger& operator= (const BigInteger& rightNum) {
         this->isPositive = rightNum.isPositive;
-        DoublyLinkedList::operator=(rightNum);
+        this->length = rightNum.length;
+        DoublyLinkedList<int>::operator=(rightNum);
         return *this; // we need to convert from doublylinkedlist to biginteger
     }
 
@@ -43,15 +58,14 @@ public:
         // If the signs are different, the answer becomes a rearranged subtraction problem
         if (this->isPositive != rightNum.isPositive) {
             // determine which number is positive
-            if (this->isPositive) {
+            if (this->isPositive) { // a-b
                 return *this - (-rightNum);
-            } else {
+            } else { // b-a
                 return rightNum - (-*this);
             }
 
         } else if (!this->isPositive) {
             // you're going to return -(a+b)
-            // how do you do add a negative of a number without changing the number's value?
             return -((-*this) + (-rightNum));
         }
         // Now we can gurantee that all numbers are positive
@@ -61,20 +75,22 @@ public:
         int carryOver = 0; // represents whether or not there was a carry over digit (being 1)
         int columnSum = 0; // represents the sum of all items in the column
         while (leftNumIter || rightNumIter) { // while there are numbers left, keep adding
-            if (!rightNumIter) {
-                columnSum = leftNumIter->data + carryOver;
-            } else if (!leftNumIter) {
-                columnSum = rightNumIter->data + carryOver;
-            } else {
-                columnSum = leftNumIter->data + rightNumIter->data + carryOver;
+            columnSum = carryOver;
+            carryOver = 0; // set the carryOver to 0 after you use it 
+            if (rightNumIter) {
+                columnSum += rightNumIter->data;
+                rightNumIter = rightNumIter->prev;
             }
-            carryOver = 0; // set the carryOver to 0 after you use it
+            if (leftNumIter) {
+                columnSum += leftNumIter->data;
+                leftNumIter = leftNumIter->prev;
+            } 
+            
             sum.insertFirst(columnSum % 10); // insert the number in the one's place
             if (columnSum >= 10) {
                 carryOver = 1;
             }
-            leftNumIter = leftNumIter->prev;
-            rightNumIter = rightNumIter->prev;
+            
         }
         return sum;
     }
@@ -84,18 +100,35 @@ public:
     BigInteger operator- (const BigInteger& rightNum) const {
         // if the signs are different, it basically becomes a rearranged addition equation
         BigInteger difference;
+        // if (this->isPositive != rightNum.isPositive) {
+        //     // determine which number is positive
+        //     if (!this->isPositive) {
+        //         difference.isPositive = !difference.isPositive; // this method is supposed to be const! make a copy
+        //     }
+        //     return *this + rightNum; // if second is positive, return the negative of left + right
+        // }
         if (this->isPositive != rightNum.isPositive) {
             // determine which number is positive
-            if (!this->isPositive) {
-                difference.isPositive = difference.isPositive; // this method is supposed to be const! make a copy
+            if (this->isPositive) {
+                return *this + (-rightNum);
+            } else {
+                return -(rightNum + (-*this));
             }
-            return *this + rightNum; // if second is positive, return the negative of left + right
+
+        } else if (!this->isPositive) {
+            // you're going to return -(a-b)
+            return -((-*this) - (-rightNum));
+        }
+        // now it's guranteed that they have the same sign, need to check which is absolutely bigger
+        if (*this < rightNum) {
+            return -(rightNum - *this);
         }
 
         // You must first decide which number is larger and determine which number subtracted by the other based off that
         BigInteger leftNumCopy = *this; // We need to make a copy of the left number because 
         IntNode *leftNumIter = leftNumCopy.last; 
         IntNode *rightNumIter = rightNum.last;
+
         bool carry = false; // represents whether or not you should carry a number from previous digit
         int columnDiff = 0; 
         while (leftNumIter) { // length of left num is always greater than or equal to the length of the right num
@@ -103,6 +136,12 @@ public:
                 leftNumIter->data--;
                 carry = false;
             }
+            // if right number ran out of numbers
+            if (!rightNumIter) {
+                difference.insertFirst(leftNumIter->data);
+                leftNumIter = leftNumIter->prev;
+                continue;
+            } 
             if (leftNumIter->data - rightNumIter->data < 0) { // check if you need to carry over a number from the left
                 carry = true;
                 leftNumIter->data += 10;
@@ -113,16 +152,15 @@ public:
         }
         
         // We need to trim the zeroes at the beginning or else the length of the result will be inaccurate
-        IntNode *zeroPtr = difference.first;
-        IntNode *prevZero = nullptr;
-        while (zeroPtr->data == 0) {
-            prevZero = zeroPtr;
-            zeroPtr = zeroPtr->next;
-            delete prevZero;
-        } 
+        difference.trimLeadingZeroes();
         return difference;
     }
 
+    void trimLeadingZeroes() {
+        while (length > 1 && first->data == 0) {
+            deleteFirst();
+        }
+    }
     // unary operator, just negates the sign
     BigInteger operator- () const {
         BigInteger negation = *this;
@@ -194,23 +232,41 @@ public:
     }
 
     // friend functions
-    // friend ostream& operator<<(ostream& out, const BigInteger &outputNum) {
-    //     // we don't need to check if the output number is empty bc the parent will
-    //     // all we have to do is print out the negative if there is one.
-    //     if (!outputNum.isPositive) {
-    //         out << '-';
-    //     }
-    //     return DoublyLinkedList<int>::<<(out, outputNum);
-    // }
-
-    friend istream& operator>>(istream& in, BigInteger &inputNum) {
-        // convert inputstream to a string and let the construcrtor take care of it
-        char c;
-        cin.peek() >> c;
-        if (c == '-') {
-            inputNum.isPositive = false;
+    friend ostream& operator<<(ostream& out, const BigInteger &inputNum) {
+        // we don't need to check if the output number is empty bc the parent will
+        // all we have to do is print out the negative if there is one.
+        if (!inputNum.isPositive) {
+            out << '-';
         }
-        return in >> (DoublyLinkedList<int>&)inputNum;
+        // Note: we don't have to call the << of the super class because they don't wan't the arrows
+        // we just need to print out the number itself
+        IntNode *temp = inputNum.first;
+        while (temp) {
+            out << temp->data;
+            temp = temp->next;
+        }
+        return out;
+    }
+
+    friend istream& operator>>(istream& in, BigInteger &result) {
+        // convert inputstream to a string and let the construcrtor take care of it
+        result.clear();
+        if (in.peek() == '-') {
+            result.isPositive = false;
+            char c;
+            in >> c;
+        }
+
+        string line;
+        std::getline(in, line); 
+        for (auto c : line) {
+            int a = static_cast<int>(c-'0');
+            result.insertLast(static_cast<int>(c-'0'));
+        }
+        return in;
+        // return in >> (DoublyLinkedList<int>&)inputNum;
+
         
     }
 };
+#endif

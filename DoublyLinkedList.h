@@ -27,11 +27,22 @@ public:
     
     //copy constructor
     DoublyLinkedList(const DoublyLinkedList<T> &other) {
-        *this = other;
+        if (!other.first) { // don't need to copy any elements over if it's empty
+            return;
+        }
+        
+        // create the first node
+        Node<T> *otherNode = other.first;
+
+        // add in all the other Nodes
+        while(otherNode) {
+            insertLast(otherNode->data);
+            otherNode = otherNode->next;
+        }
     }
 
     //assignment operator
-    DoublyLinkedList operator=(const DoublyLinkedList<T> &other) {
+    DoublyLinkedList<T>& operator=(const DoublyLinkedList<T> &other) {
         if (this == &other) { // we don't need to do anything if they're the same thing
             return *this;
         }
@@ -44,17 +55,14 @@ public:
         
         // create the first node
         Node<T> *otherNode = other.first;
-        first = new Node<T>();
-        first->data = otherNode->data;
-        last = first;
-        otherNode = otherNode->next;
 
         // add in all the other Nodes
         while(otherNode) {
-            last->next = new Node<T>();
-            last->next->data = otherNode->data;
-            last->next->prev = last; // make the links work the other way. 
-            last = last->next;
+            // last->next = new Node<T>();
+            // last->next->data = otherNode->data;
+            insertLast(otherNode->data);
+            // last->next->prev = last; // make the links work the other way. 
+            // last = last->next;
             otherNode = otherNode->next;
         }
         return *this;
@@ -110,7 +118,7 @@ public:
         if (isEmpty()) return;
         --length;
         // note: there is no double link when there's only one item in the list. 
-        if (length == 0) {
+        if (length <= 0) {
             delete first;
             first = nullptr;
             last = nullptr;
@@ -127,7 +135,7 @@ public:
         if (isEmpty()) return;
         --length;
         // edge case: no double link when there's only one item. 
-        if (length == 0) {
+        if (length <= 0) {
             delete last;
             first = nullptr;
             last = nullptr;
@@ -140,7 +148,7 @@ public:
     }     
     
     //destroys the list and makes it empty
-    void clear() {
+    virtual void clear() {
         // iterate through all items and delete them
         while (!isEmpty()) {
             deleteFirst();
@@ -215,14 +223,14 @@ public:
     // create doubly linked list based off text file
     template <class U>
     friend istream& operator>>(istream& in, DoublyLinkedList<U> &inputList) {
-        inputList.clear();
-        char c;
-        string line;
-        std::getline(in, line); 
+        // inputList.clear();
+        // char c;
+        // string line;
+        // std::getline(in, line); 
         
-        for (int i = 0; i < line.length(); ++i) {
-            inputList.insertLast(static_cast<U>(line[i]-'0'));
-        }
+        // for (int i = 0; i < line.length(); ++i) {
+        //     inputList.insertLast(static_cast<U>(line[i]-'0'));
+        // }
         return in;
     }
 
