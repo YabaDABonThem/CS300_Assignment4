@@ -54,7 +54,7 @@ public:
         }
         
         // create the first node
-        Node<T> *otherNode = other.first;
+        Node<T> *otherNode = other.first; 
 
         // add in all the other Nodes
         while(otherNode) {
@@ -223,14 +223,8 @@ public:
     // create doubly linked list based off text file
     template <class U>
     friend istream& operator>>(istream& in, DoublyLinkedList<U> &inputList) {
-        // inputList.clear();
-        // char c;
-        // string line;
-        // std::getline(in, line); 
-        
-        // for (int i = 0; i < line.length(); ++i) {
-        //     inputList.insertLast(static_cast<U>(line[i]-'0'));
-        // }
+        // for some reason we don't need an actual implementation of this method
+        // this project is kinda scuffed then lmao
         return in;
     }
 

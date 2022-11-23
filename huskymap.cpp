@@ -184,7 +184,7 @@ int main()
 {
 	dllTest();          //test cases for doubly linked list implementation
 	bigIntegerTest();   //test cases for big integer implementation
-	cout << "Test Score:" << score << endl;
+	cout << "Test Score: " << score << endl;
 	//operatorTest();
 	return 0;
 }
